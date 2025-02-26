@@ -3,9 +3,11 @@ package com.example.android_sdk
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
+import android.widget.Toast
 
 class WebViewActivity : AppCompatActivity() {
     private lateinit var webView: WebView
@@ -29,6 +31,7 @@ class WebViewActivity : AppCompatActivity() {
 
         // Enable back button in action bar
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.title = "Web Content"
 
         val url = intent.getStringExtra(EXTRA_URL) ?: DEFAULT_URL
 
@@ -39,6 +42,10 @@ class WebViewActivity : AppCompatActivity() {
             loadWithOverviewMode = true
             useWideViewPort = true
         }
+        
+        // Add JavaScript interface to allow web-to-native communication
+        webView.addJavascriptInterface(WebAppInterface(this), "AndroidBridge")
+        
         webView.webViewClient = WebViewClient()
         webView.loadUrl(url)
     }
@@ -48,13 +55,49 @@ class WebViewActivity : AppCompatActivity() {
         finish()
         return true
     }
-
+    
     // Handle device back button
     override fun onBackPressed() {
         if (webView.canGoBack()) {
             webView.goBack()
         } else {
             super.onBackPressed()
+        }
+    }
+    
+    // JavaScript interface class to expose Android functions to JavaScript
+    inner class WebAppInterface(private val context: Context) {
+        
+        @JavascriptInterface
+        fun navigateTo(screenName: String) {
+            runOnUiThread {
+                when (screenName) {
+                    "home" -> {
+                        // Navigate to home/main activity
+                        val intent = Intent(context, MainActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                        startActivity(intent)
+                    }
+                    "settings" -> {
+                        // Navigate to settings activity
+                        SettingsActivity.launch(context)
+                    }
+                    "profile" -> {
+                        // Navigate to profile activity
+                        ProfileActivity.launch(context)
+                    }
+                    else -> {
+                        Toast.makeText(context, "Unknown screen: $screenName", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
+        
+        @JavascriptInterface
+        fun showToast(message: String) {
+            runOnUiThread {
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }

@@ -26,6 +26,12 @@
         <activity
             android:name="com.example.android_sdk.WebViewActivity"
             android:exported="false" />
+        <activity
+            android:name="com.example.android_sdk.SettingsActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.example.android_sdk.ProfileActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
