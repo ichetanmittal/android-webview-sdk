@@ -94,6 +94,21 @@ class WebViewActivity : AppCompatActivity() {
         }
         
         @JavascriptInterface
+        fun navigateToAppScreen(className: String) {
+            runOnUiThread {
+                try {
+                    // Try to find the class in the app's package
+                    val packageName = context.applicationContext.packageName
+                    val activityClass = Class.forName("$packageName.$className")
+                    val intent = Intent(context, activityClass)
+                    context.startActivity(intent)
+                } catch (e: Exception) {
+                    Toast.makeText(context, "Error navigating to $className: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+        
+        @JavascriptInterface
         fun showToast(message: String) {
             runOnUiThread {
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
