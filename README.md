@@ -35,7 +35,7 @@ dependencies {
 ## Usage
 
 ```kotlin
-// Launch with default URL (https://xaults.com)
+// Launch with default URL (https://elaborate-panda-b62f13.netlify.app/)
 WebViewActivity.launch(context)
 
 // Or launch with a custom URL

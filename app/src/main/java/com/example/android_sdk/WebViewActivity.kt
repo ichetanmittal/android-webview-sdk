@@ -12,7 +12,7 @@ class WebViewActivity : AppCompatActivity() {
 
     companion object {
         private const val EXTRA_URL = "extra_url"
-        private const val DEFAULT_URL = "https://xaults.com"
+        private const val DEFAULT_URL = "https://elaborate-panda-b62f13.netlify.app/"
 
         @JvmStatic
         fun launch(context: Context, url: String = DEFAULT_URL) {
