@@ -80,3 +80,143 @@ Create a new Android application project to test the SDK:
        WebViewActivity.launch(this, "https://elaborate-panda-b62f13.netlify.app/")
    }
    ```
+
+## Step 4: Test Cross-Navigation from WebView to Native Activities
+
+The WebView SDK supports navigating from web content back to native activities in your app. This demonstrates the JavaScript bridge functionality.
+
+1. Create a native activity in your test app (`TestActivity.kt`):
+   ```kotlin
+   package com.example.testv2
+
+   import android.os.Bundle
+   import android.widget.Button
+   import androidx.appcompat.app.AppCompatActivity
+
+   class TestActivity : AppCompatActivity() {
+       override fun onCreate(savedInstanceState: Bundle?) {
+           super.onCreate(savedInstanceState)
+           setContentView(R.layout.activity_test)
+           
+           // Set up back button
+           val backButton = findViewById<Button>(R.id.back_button)
+           backButton.setOnClickListener {
+               finish()
+           }
+       }
+   }
+   ```
+
+2. Create a layout for the test activity (`activity_test.xml`):
+   ```xml
+   <?xml version="1.0" encoding="utf-8"?>
+   <androidx.constraintlayout.widget.ConstraintLayout 
+       xmlns:android="http://schemas.android.com/apk/res/android"
+       xmlns:app="http://schemas.android.com/apk/res-auto"
+       xmlns:tools="http://schemas.android.com/tools"
+       android:layout_width="match_parent"
+       android:layout_height="match_parent"
+       tools:context=".TestActivity">
+
+       <TextView
+           android:id="@+id/test_title"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:text="Test Activity"
+           android:textSize="24sp"
+           android:textStyle="bold"
+           app:layout_constraintBottom_toBottomOf="parent"
+           app:layout_constraintEnd_toEndOf="parent"
+           app:layout_constraintStart_toStartOf="parent"
+           app:layout_constraintTop_toTopOf="parent"
+           app:layout_constraintVertical_bias="0.3" />
+
+       <TextView
+           android:id="@+id/test_description"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_marginTop="16dp"
+           android:text="This is a native Android activity launched from the WebView"
+           android:textAlignment="center"
+           android:padding="16dp"
+           app:layout_constraintEnd_toEndOf="parent"
+           app:layout_constraintStart_toStartOf="parent"
+           app:layout_constraintTop_toBottomOf="@+id/test_title" />
+
+       <Button
+           android:id="@+id/back_button"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_marginTop="32dp"
+           android:text="Go Back"
+           app:layout_constraintEnd_toEndOf="parent"
+           app:layout_constraintStart_toStartOf="parent"
+           app:layout_constraintTop_toBottomOf="@+id/test_description" />
+   </androidx.constraintlayout.widget.ConstraintLayout>
+   ```
+
+3. Register the activity in your AndroidManifest.xml:
+   ```xml
+   <activity
+       android:name=".TestActivity"
+       android:exported="false"
+       android:label="Test Activity" />
+   ```
+
+4. Add a direct navigation button to your MainActivity for comparison testing:
+   
+   In `activity_main.xml`:
+   ```xml
+   <Button
+       android:id="@+id/go_to_test_button"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:text="Go to Test Page"
+       app:layout_constraintTop_toBottomOf="@+id/launch_webview_button"
+       app:layout_constraintStart_toStartOf="parent"
+       app:layout_constraintEnd_toEndOf="parent" />
+   ```
+   
+   In `MainActivity.kt` (make sure to add the Intent import):
+   ```kotlin
+   import android.content.Intent
+   
+   // Find the test page button
+   val goToTestButton = findViewById<Button>(R.id.go_to_test_button)
+   
+   // Set click listener for test page button
+   goToTestButton.setOnClickListener {
+       // Navigate directly to the TestActivity
+       val intent = Intent(this, TestActivity::class.java)
+       startActivity(intent)
+   }
+   ```
+
+5. Test both navigation paths:
+   - Direct navigation: Click the "Go to Test Page" button in MainActivity
+   - WebView navigation: Launch the WebView and click the "Go to Test Page" button in the web content
+
+   Both should navigate to the same TestActivity, demonstrating the bridge between web and native components.
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Manifest Merger Failed**
+   - If you see a manifest merger error related to the theme, make sure you've added `tools:replace="android:theme"` to your application element in AndroidManifest.xml.
+   - Also ensure you've added the xmlns:tools declaration: `xmlns:tools="http://schemas.android.com/tools"`
+
+2. **WebView Not Loading**
+   - Verify that you've added the Internet permission in your AndroidManifest.xml.
+   - Check that the URL is correct and accessible.
+   - Make sure you're testing on a device with internet connectivity.
+
+3. **JavaScript Bridge Not Working**
+   - The bridge requires the URL to be loaded correctly in the WebView.
+   - The hosted React app at https://elaborate-panda-b62f13.netlify.app/ is already configured to use the JavaScript bridge.
+   - If you're using a custom URL, make sure your JavaScript is calling the bridge methods correctly.
+
+4. **TestActivity Not Found**
+   - Ensure that TestActivity is properly registered in your AndroidManifest.xml.
+   - Check that the package name in TestActivity.kt matches your application's package name.
+   - Verify that you've imported the correct classes in MainActivity.kt.
