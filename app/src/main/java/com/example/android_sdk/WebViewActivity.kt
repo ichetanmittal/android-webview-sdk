@@ -82,10 +82,12 @@ class WebViewActivity : AppCompatActivity() {
                         // Navigate to settings activity
                         SettingsActivity.launch(context)
                     }
+                    /*
                     "profile" -> {
                         // Navigate to profile activity
                         ProfileActivity.launch(context)
                     }
+                    */
                     else -> {
                         Toast.makeText(context, "Unknown screen: $screenName", Toast.LENGTH_SHORT).show()
                     }

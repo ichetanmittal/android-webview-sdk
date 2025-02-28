@@ -47,60 +47,36 @@ Create a new Android application project to test the SDK:
    <uses-permission android:name="android.permission.INTERNET" />
    ```
 
+5. If you encounter a manifest merger conflict due to the application theme, add the `tools:replace` attribute to the application element in your `AndroidManifest.xml`:
+   ```xml
+   <application
+       ...
+       android:theme="@style/Theme.YourAppTheme"
+       tools:replace="android:theme">
+       ...
+   </application>
+   ```
+
 ## Step 3: Use the SDK in Your Test Application
 
-Add code to launch the WebView:
+1. Create a button in your activity layout (`activity_main.xml`):
+   ```xml
+   <Button
+       android:id="@+id/launch_webview_button"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:text="Launch WebView" />
+   ```
 
-```kotlin
-import com.example.android_sdk.WebViewActivity
+2. Add code to launch the WebView in your activity (`MainActivity.kt`):
+   ```kotlin
+   import com.example.android_sdk.WebViewActivity
 
-// In your activity or fragment:
-
-// Launch with default URL (https://elaborate-panda-b62f13.netlify.app/)
-WebViewActivity.launch(context)
-
-// Or launch with a custom URL
-WebViewActivity.launch(context, "https://your-url.com")
-```
-
-## Step 4: Test JavaScript Bridge Functionality
-
-To test the JavaScript bridge, you need a web page with JavaScript that calls the bridge methods:
-
-```html
-<!DOCTYPE html>
-<html>
-<head>
-    <title>WebView SDK Test</title>
-</head>
-<body>
-    <h1>WebView SDK Test Page</h1>
-    
-    <button onclick="showToast()">Show Toast</button>
-    <button onclick="navigateToSettings()">Go to Settings</button>
-    <button onclick="navigateToProfile()">Go to Profile</button>
-    
-    <script>
-        function showToast() {
-            AndroidBridge.showToast("Hello from JavaScript!");
-        }
-        
-        function navigateToSettings() {
-            AndroidBridge.navigateTo("settings");
-        }
-        
-        function navigateToProfile() {
-            AndroidBridge.navigateTo("profile");
-        }
-    </script>
-</body>
-</html>
-```
-
-You can host this page on a server or use a local HTML file.
-
-## Step 5: Test Back Button Navigation
-
-1. Navigate to several pages within the WebView
-2. Press the back button to ensure proper navigation within the WebView history
-3. When the WebView history is exhausted, the back button should close the WebView activity
+   // In your activity:
+   val launchWebViewButton = findViewById<Button>(R.id.launch_webview_button)
+   
+   launchWebViewButton.setOnClickListener {
+       // Launch WebView with the test URL
+       WebViewActivity.launch(this, "https://elaborate-panda-b62f13.netlify.app/")
+   }
+   ```
